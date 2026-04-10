@@ -9,7 +9,7 @@
     - PATCH (+1): any update
     - MINOR (+1, PATCH resets to 0): major/significant change declared
     - MAJOR: never changes (always 3)
-    Current: V3.1.0
+    Current: V3.1.1
   -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,7 +21,7 @@
 
     #main { display: flex; flex: 1; overflow: hidden; }
 
-    /* === CALLS SIDEBAR === */
+    /* === SIDEBAR === */
     #calls-sidebar {
       width: 280px;
       min-width: 280px;
@@ -32,83 +32,81 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-    #calls-sidebar h2 {
-      font-size: 13px;
-      font-weight: bold;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 10px 14px;
-      border-bottom: 1px solid #333;
-      flex-shrink: 0;
-    }
-    #calls-list {
+    #sidebar-scroll {
       overflow-y: auto;
       flex: 1;
       padding: 8px 0;
     }
-    #calls-list::-webkit-scrollbar { width: 5px; }
-    #calls-list::-webkit-scrollbar-track { background: #111; }
-    #calls-list::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    #sidebar-scroll::-webkit-scrollbar { width: 5px; }
+    #sidebar-scroll::-webkit-scrollbar-track { background: #111; }
+    #sidebar-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
 
+    .sidebar-section-header {
+      font-size: 11px;
+      font-weight: bold;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 10px 14px 6px;
+    }
+    .sidebar-divider {
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 8px 10px;
+    }
+
+    /* Call cards */
     .call-card {
-      margin: 6px 10px;
+      margin: 4px 10px;
       background: #1e1e1e;
       border: 1px solid #333;
       border-radius: 6px;
       padding: 10px 12px;
     }
-    .call-card-header {
+    .call-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .call-number { font-size: 13px; font-weight: bold; color: #fff; }
+    .call-desc { font-size: 12px; color: #aaa; margin-bottom: 8px; line-height: 1.4; }
+    .call-units-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .call-units { display: flex; flex-wrap: wrap; gap: 4px; }
+    .call-unit-badge { font-size: 11px; background: #2a2a2a; border: 1px solid #444; border-radius: 4px; padding: 2px 7px; color: #ddd; }
+    .call-no-units { font-size: 11px; color: #555; font-style: italic; }
+
+    /* Unit rows */
+    .unit-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 4px;
+      margin: 1px 6px;
     }
-    .call-number {
-      font-size: 13px;
-      font-weight: bold;
-      color: #fff;
+    .unit-row:hover { background: #1a1a1a; }
+    .unit-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.3);
     }
-    .call-desc {
+    .unit-callsign {
       font-size: 12px;
-      color: #aaa;
-      margin-bottom: 8px;
-      line-height: 1.4;
+      font-weight: bold;
+      color: #ddd;
+      min-width: 60px;
     }
-    .call-units-label {
+    .unit-team {
       font-size: 11px;
       color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-    }
-    .call-units {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .call-unit-badge {
-      font-size: 11px;
-      background: #2a2a2a;
-      border: 1px solid #444;
-      border-radius: 4px;
-      padding: 2px 7px;
-      color: #ddd;
-    }
-    .call-no-units {
-      font-size: 11px;
-      color: #555;
-      font-style: italic;
-    }
-    #calls-empty {
-      font-size: 13px;
-      color: #555;
-      text-align: center;
-      margin-top: 40px;
-      padding: 0 20px;
+      flex: 1;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* === MAP SIDE === */
+    .sidebar-empty { font-size: 12px; color: #555; padding: 6px 14px; font-style: italic; }
+
+    /* === MAP === */
     #map-container {
       flex: 1;
       overflow: hidden;
@@ -137,26 +135,14 @@
       z-index: 10;
     }
     .zoom-btn {
-      width: 32px;
-      height: 32px;
-      background: #222;
-      border: 1px solid #444;
-      color: #fff;
-      font-size: 18px;
-      line-height: 1;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 32px; height: 32px;
+      background: #222; border: 1px solid #444; color: #fff;
+      font-size: 18px; line-height: 1; border-radius: 6px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
       user-select: none;
     }
     .zoom-btn:hover { background: #333; }
-    #zoom-level {
-      font-size: 11px;
-      color: #888;
-      text-align: center;
-    }
+    #zoom-level { font-size: 11px; color: #888; text-align: center; }
   </style>
 </head>
 <body>
@@ -166,11 +152,24 @@
   </div>
   <div id="main">
 
-    <!-- CALLS SIDEBAR -->
+    <!-- SIDEBAR -->
     <div id="calls-sidebar">
-      <h2>Active Calls</h2>
-      <div id="calls-list">
-        <div id="calls-empty">No active calls</div>
+      <div id="sidebar-scroll">
+
+        <!-- Active Calls -->
+        <div class="sidebar-section-header">Active Calls</div>
+        <div id="calls-list"><div class="sidebar-empty">No active calls</div></div>
+
+        <hr class="sidebar-divider">
+
+        <!-- Online Units -->
+        <div class="sidebar-section-header">Online Units</div>
+        <div id="units-sheriff"></div>
+        <div id="units-police"></div>
+        <div id="units-fire"></div>
+        <div id="units-dot"></div>
+        <div id="units-staff"></div>
+
       </div>
     </div>
 
@@ -197,7 +196,7 @@
   </div>
 
   <script>
-    const VERSION = 'V3.1.0';
+    const VERSION = 'V3.1.1';
     const WORKER_URL = 'https://winter-dust-d61c.dogegamer64209.workers.dev/';
     const MAP_URL = 'https://api.policeroleplay.community/maps/fall_blank.png';
     const POLL_INTERVAL = 5000;
@@ -214,31 +213,26 @@
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-text');
     const lastUpdated = document.getElementById('last-updated');
-    const callsList = document.getElementById('calls-list');
-    const callsEmpty = document.getElementById('calls-empty');
     const mapContainer = document.getElementById('map-container');
     const mapWrapper = document.getElementById('map-wrapper');
-    const zoomLevel = document.getElementById('zoom-level');
+    const zoomLevelEl = document.getElementById('zoom-level');
 
     let mapImage = null;
     let latestData = null;
 
-    // === ZOOM & PAN STATE ===
+    // === ZOOM & PAN ===
     let scale = 1;
     let offsetX = 0;
     let offsetY = 0;
     let isPanning = false;
-    let panStartX = 0;
-    let panStartY = 0;
-    let panStartOffsetX = 0;
-    let panStartOffsetY = 0;
-    const MIN_SCALE = 0.2;
+    let panStartX = 0, panStartY = 0, panStartOffsetX = 0, panStartOffsetY = 0;
+    const MIN_SCALE = 0.3;   // 30% minimum zoom
     const MAX_SCALE = 5;
     const ZOOM_STEP = 0.2;
 
     function applyTransform() {
       mapWrapper.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-      zoomLevel.textContent = Math.round(scale * 100) + '%';
+      zoomLevelEl.textContent = Math.round(scale * 100) + '%';
     }
 
     function clampOffset() {
@@ -247,22 +241,22 @@
       const ch = mapContainer.clientHeight;
       const mw = mapImage.naturalWidth * scale;
       const mh = mapImage.naturalHeight * scale;
-      const minX = Math.min(0, cw - mw);
-      const minY = Math.min(0, ch - mh);
-      offsetX = Math.max(minX, Math.min(0, offsetX));
-      offsetY = Math.max(minY, Math.min(0, offsetY));
+      offsetX = Math.max(Math.min(0, cw - mw), Math.min(0, offsetX));
+      offsetY = Math.max(Math.min(0, ch - mh), Math.min(0, offsetY));
     }
 
     function zoomBy(delta, cx, cy) {
       const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
       if (newScale === scale) return;
-      const pivotX = (cx !== undefined ? cx : mapContainer.clientWidth / 2);
-      const pivotY = (cy !== undefined ? cy : mapContainer.clientHeight / 2);
+      const pivotX = cx !== undefined ? cx : mapContainer.clientWidth / 2;
+      const pivotY = cy !== undefined ? cy : mapContainer.clientHeight / 2;
       offsetX = pivotX - (pivotX - offsetX) * (newScale / scale);
       offsetY = pivotY - (pivotY - offsetY) * (newScale / scale);
       scale = newScale;
       clampOffset();
       applyTransform();
+      // Redraw map so icon sizes update with new scale
+      drawMap(latestData);
     }
 
     document.getElementById('zoom-in').addEventListener('click', () => zoomBy(ZOOM_STEP));
@@ -271,17 +265,13 @@
     mapContainer.addEventListener('wheel', (e) => {
       e.preventDefault();
       const rect = mapContainer.getBoundingClientRect();
-      const cx = e.clientX - rect.left;
-      const cy = e.clientY - rect.top;
-      zoomBy(e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP, cx, cy);
+      zoomBy(e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP, e.clientX - rect.left, e.clientY - rect.top);
     }, { passive: false });
 
     mapContainer.addEventListener('mousedown', (e) => {
       isPanning = true;
-      panStartX = e.clientX;
-      panStartY = e.clientY;
-      panStartOffsetX = offsetX;
-      panStartOffsetY = offsetY;
+      panStartX = e.clientX; panStartY = e.clientY;
+      panStartOffsetX = offsetX; panStartOffsetY = offsetY;
     });
     window.addEventListener('mousemove', (e) => {
       if (!isPanning) return;
@@ -292,15 +282,12 @@
     });
     window.addEventListener('mouseup', () => { isPanning = false; });
 
-    // Touch support
     let lastTouchDist = null;
     mapContainer.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
         isPanning = true;
-        panStartX = e.touches[0].clientX;
-        panStartY = e.touches[0].clientY;
-        panStartOffsetX = offsetX;
-        panStartOffsetY = offsetY;
+        panStartX = e.touches[0].clientX; panStartY = e.touches[0].clientY;
+        panStartOffsetX = offsetX; panStartOffsetY = offsetY;
       }
     });
     mapContainer.addEventListener('touchmove', (e) => {
@@ -312,8 +299,8 @@
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (lastTouchDist !== null) {
           const rect = mapContainer.getBoundingClientRect();
-          const cx = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left;
-          const cy = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top;
+          const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+          const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
           zoomBy((dist - lastTouchDist) * 0.01, cx, cy);
         }
         lastTouchDist = dist;
@@ -343,10 +330,17 @@
       canvas.height = mapImage.naturalHeight;
       ctx.drawImage(mapImage, 0, 0);
 
-      const fontSize = 54;
-      const callFontSize = 36;
-      const radius = 20;
-      const border = 5;
+      // Icon sizes scale inversely with zoom — bigger zoom = smaller canvas-space icons
+      // Base sizes are at scale=1; divide by scale so screen size stays roughly constant
+      const BASE_RADIUS = 20;
+      const BASE_BORDER = 5;
+      const BASE_FONT = 54;
+      const BASE_CALL_FONT = 36;
+
+      const radius = BASE_RADIUS / scale;
+      const border = BASE_BORDER / scale;
+      const fontSize = BASE_FONT / scale;
+      const callFontSize = BASE_CALL_FONT / scale;
 
       function drawDot(x, z, fillColor, borderColor) {
         ctx.beginPath();
@@ -378,14 +372,14 @@
         if (pos.length < 2) continue;
         const [x, z] = pos;
         drawDot(x, z, 'black', 'white');
-        drawText(`#${call.CallNumber}`, x, z - radius - border - 8, callFontSize, true);
+        drawText(`#${call.CallNumber}`, x, z - radius - border - 8 / scale, callFontSize, true);
         const caller = call.Caller;
         let belowText = call.Description || '';
         if (caller) {
           const match = players.find(p => String(p.Player || '').split(':')[1] === String(caller));
           belowText = match ? match.Player.split(':')[0] : String(caller);
         }
-        drawText(belowText, x, z + radius + border + 8, callFontSize, false);
+        drawText(belowText, x, z + radius + border + 8 / scale, callFontSize, false);
       }
 
       for (const player of players) {
@@ -398,89 +392,100 @@
         if (!TEAM_COLORS[team]) continue;
         const color = callsign.includes('ST') ? '#e67e22' : TEAM_COLORS[team];
         drawDot(x, z, color, 'white');
-        drawText(callsign, x, z + radius + border + 8, fontSize, false);
+        drawText(callsign, x, z + radius + border + 8 / scale, fontSize, false);
       }
     }
 
-    // === CALLS SIDEBAR ===
-    function updateCallsSidebar(data) {
+    // === SIDEBAR ===
+    function updateSidebar(data) {
       const calls = (data && data.EmergencyCalls) || [];
       const players = (data && data.Players) || [];
 
-      // Build UID -> callsign lookup
+      // UID -> callsign map
       const uidMap = {};
       for (const player of players) {
         const raw = player.Player || '';
         const parts = raw.split(':');
         if (parts.length >= 2) {
-          const uid = parts[1].trim();
-          const name = parts[0].trim();
-          uidMap[uid] = player.Callsign || name;
+          uidMap[parts[1].trim()] = player.Callsign || parts[0].trim();
         }
       }
 
+      // --- Calls ---
+      const callsList = document.getElementById('calls-list');
       callsList.innerHTML = '';
-
       if (calls.length === 0) {
-        callsList.appendChild(callsEmpty);
-        callsEmpty.style.display = '';
-        return;
+        callsList.innerHTML = '<div class="sidebar-empty">No active calls</div>';
+      } else {
+        for (const call of calls) {
+          const card = document.createElement('div');
+          card.className = 'call-card';
+          const attachedUIDs = call.Players || [];
+          const badgeHTML = attachedUIDs.length === 0
+            ? '<span class="call-no-units">None attached</span>'
+            : attachedUIDs.map(uid => `<span class="call-unit-badge">${uidMap[String(uid)] || 'UID:' + uid}</span>`).join('');
+          card.innerHTML = `
+            <div class="call-card-header"><span class="call-number">Call #${call.CallNumber}</span></div>
+            <div class="call-desc">${call.Description || 'No description'}</div>
+            <div class="call-units-label">Attached Units</div>
+            <div class="call-units">${badgeHTML}</div>
+          `;
+          callsList.appendChild(card);
+        }
       }
 
-      for (const call of calls) {
-        const card = document.createElement('div');
-        card.className = 'call-card';
+      // --- Online Units grouped by team ---
+      const groups = {
+        Sheriff: { id: 'units-sheriff', label: 'Sheriff', color: '#22c55e', units: [] },
+        Police:  { id: 'units-police',  label: 'Police',  color: '#3b82f6', units: [] },
+        Fire:    { id: 'units-fire',    label: 'Fire',    color: '#ef4444', units: [] },
+        DOT:     { id: 'units-dot',     label: 'DOT',     color: '#f59e0b', units: [] },
+        Staff:   { id: 'units-staff',   label: 'Staff',   color: '#e67e22', units: [] },
+      };
 
-        const header = document.createElement('div');
-        header.className = 'call-card-header';
-
-        const num = document.createElement('span');
-        num.className = 'call-number';
-        num.textContent = `Call #${call.CallNumber}`;
-        header.appendChild(num);
-        card.appendChild(header);
-
-        const desc = document.createElement('div');
-        desc.className = 'call-desc';
-        desc.textContent = call.Description || 'No description';
-        card.appendChild(desc);
-
-        const unitsLabel = document.createElement('div');
-        unitsLabel.className = 'call-units-label';
-        unitsLabel.textContent = 'Attached Units';
-        card.appendChild(unitsLabel);
-
-        const attachedUIDs = call.Players || [];
-        const unitsDiv = document.createElement('div');
-        unitsDiv.className = 'call-units';
-
-        if (attachedUIDs.length === 0) {
-          const none = document.createElement('span');
-          none.className = 'call-no-units';
-          none.textContent = 'None attached';
-          unitsDiv.appendChild(none);
-        } else {
-          for (const uid of attachedUIDs) {
-            const badge = document.createElement('span');
-            badge.className = 'call-unit-badge';
-            badge.textContent = uidMap[String(uid)] || `UID:${uid}`;
-            unitsDiv.appendChild(badge);
-          }
+      for (const player of players) {
+        const team = player.Team || '';
+        const callsign = player.Callsign || (player.Player || '').split(':')[0] || 'Unknown';
+        const isStaff = callsign.includes('ST');
+        if (isStaff) {
+          groups.Staff.units.push({ callsign, team });
+        } else if (groups[team]) {
+          groups[team].units.push({ callsign, team });
         }
+      }
 
-        card.appendChild(unitsDiv);
-        callsList.appendChild(card);
+      for (const key of ['Sheriff', 'Police', 'Fire', 'DOT', 'Staff']) {
+        const g = groups[key];
+        const el = document.getElementById(g.id);
+        el.innerHTML = '';
+        if (g.units.length === 0) continue;
+
+        const label = document.createElement('div');
+        label.className = 'sidebar-section-header';
+        label.style.paddingTop = '4px';
+        label.textContent = `${g.label} (${g.units.length})`;
+        el.appendChild(label);
+
+        for (const u of g.units) {
+          const row = document.createElement('div');
+          row.className = 'unit-row';
+          row.innerHTML = `
+            <div class="unit-dot" style="background:${g.color}"></div>
+            <span class="unit-callsign">${u.callsign}</span>
+          `;
+          el.appendChild(row);
+        }
       }
     }
 
-    // === DATA FETCH ===
+    // === FETCH ===
     async function fetchData() {
       try {
         const res = await fetch(WORKER_URL);
         const data = await res.json();
         latestData = data;
         drawMap(data);
-        updateCallsSidebar(data);
+        updateSidebar(data);
         statusDot.className = '';
         statusText.textContent = `${data.Name || 'Server'} — ${data.CurrentPlayers || 0}/${data.MaxPlayers || 0} players - ${VERSION}`;
         lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
