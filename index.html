@@ -196,7 +196,7 @@
   </div>
 
   <script>
-    const VERSION = 'V3.1.1';
+    const VERSION = 'V3.1.2';
     const WORKER_URL = 'https://winter-dust-d61c.dogegamer64209.workers.dev/';
     const MAP_URL = 'https://api.policeroleplay.community/maps/fall_blank.png';
     const POLL_INTERVAL = 5000;
@@ -337,10 +337,12 @@
       const BASE_FONT = 54;
       const BASE_CALL_FONT = 36;
 
-      const radius = BASE_RADIUS / scale;
-      const border = BASE_BORDER / scale;
-      const fontSize = BASE_FONT / scale;
-      const callFontSize = BASE_CALL_FONT / scale;
+      // NEW — icons stay at base size when zoomed out, grow slightly when zoomed in
+      const iconScale = Math.max(1, scale);
+      const radius = BASE_RADIUS / iconScale;
+      const border = BASE_BORDER / iconScale;
+      const fontSize = BASE_FONT / iconScale;
+      const callFontSize = BASE_CALL_FONT / iconScale;
 
       function drawDot(x, z, fillColor, borderColor) {
         ctx.beginPath();
@@ -372,14 +374,14 @@
         if (pos.length < 2) continue;
         const [x, z] = pos;
         drawDot(x, z, 'black', 'white');
-        drawText(`#${call.CallNumber}`, x, z - radius - border - 8 / scale, callFontSize, true);
+        drawText(`#${call.CallNumber}`, x, z - radius - border - 8 / iconScale, callFontSize, true);
         const caller = call.Caller;
         let belowText = call.Description || '';
         if (caller) {
           const match = players.find(p => String(p.Player || '').split(':')[1] === String(caller));
           belowText = match ? match.Player.split(':')[0] : String(caller);
         }
-        drawText(belowText, x, z + radius + border + 8 / scale, callFontSize, false);
+        drawText(belowText, x, z + radius + border + 8 / iconScale, callFontSize, false);
       }
 
       for (const player of players) {
@@ -392,7 +394,7 @@
         if (!TEAM_COLORS[team]) continue;
         const color = callsign.includes('ST') ? '#e67e22' : TEAM_COLORS[team];
         drawDot(x, z, color, 'white');
-        drawText(callsign, x, z + radius + border + 8 / scale, fontSize, false);
+        drawText(callsign, x, z + radius + border + 8 / iconScale, fontSize, false);
       }
     }
 
