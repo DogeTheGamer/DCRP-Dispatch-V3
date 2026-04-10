@@ -1,0 +1,2 @@
+- name: Inject worker URL
+  run: sed -i "s|__WORKER_URL__|${{ secrets.WORKER }}|g" index.html
