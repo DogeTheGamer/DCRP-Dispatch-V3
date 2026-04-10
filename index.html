@@ -11,9 +11,8 @@
     #status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 6px; }
     #status-dot.error { background: #ef4444; }
     #main { display: flex; flex: 1; overflow: hidden; }
-    #map-container { position: relative; flex: 1; overflow: hidden; cursor: grab; }
-    #map-container:active { cursor: grabbing; }
-    canvas { position: absolute; top: 0; left: 0; transform-origin: top left; }
+    #map-container { display: flex; align-items: flex-start; justify-content: flex-end; flex: 1; overflow: hidden; }
+    canvas { display: block; max-height: calc(100vh - 60px); width: auto; }
     .legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 16px; background: #111; font-size: 12px; color: #aaa; flex-shrink: 0; }
     .legend-item { display: flex; align-items: center; gap: 6px; }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid white; }
@@ -52,71 +51,12 @@
 
     const canvas = document.getElementById('map-canvas');
     const ctx = canvas.getContext('2d');
-    const container = document.getElementById('map-container');
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-text');
     const lastUpdated = document.getElementById('last-updated');
 
     let mapImage = null;
     let latestData = null;
-    let scale = 1;
-    let offsetX = 0;
-    let offsetY = 0;
-    let isPanning = false;
-    let panStartX = 0;
-    let panStartY = 0;
-    let panStartOffsetX = 0;
-    let panStartOffsetY = 0;
-
-    const MIN_SCALE = 0.2;
-    const MAX_SCALE = 8;
-
-    function applyTransform() {
-      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-    }
-
-    function fitMap() {
-      if (!mapImage) return;
-      const cw = container.clientWidth;
-      const ch = container.clientHeight;
-      const mapW = mapImage.naturalWidth;
-      const mapH = mapImage.naturalHeight;
-      scale = Math.min(cw / mapW, ch / mapH);
-      offsetX = cw - mapW * scale;
-      offsetY = 0;
-      applyTransform();
-    }
-
-    container.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const rect = container.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-      const delta = e.deltaY > 0 ? 0.85 : 1.15;
-      const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * delta));
-      offsetX = mouseX - (mouseX - offsetX) * (newScale / scale);
-      offsetY = mouseY - (mouseY - offsetY) * (newScale / scale);
-      scale = newScale;
-      applyTransform();
-      drawMap(latestData);
-    }, { passive: false });
-
-    container.addEventListener('mousedown', (e) => {
-      isPanning = true;
-      panStartX = e.clientX;
-      panStartY = e.clientY;
-      panStartOffsetX = offsetX;
-      panStartOffsetY = offsetY;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!isPanning) return;
-      offsetX = panStartOffsetX + (e.clientX - panStartX);
-      offsetY = panStartOffsetY + (e.clientY - panStartY);
-      applyTransform();
-    });
-
-    window.addEventListener('mouseup', () => { isPanning = false; });
 
     function loadMap() {
       return new Promise((resolve, reject) => {
@@ -134,16 +74,10 @@
       canvas.height = mapImage.naturalHeight;
       ctx.drawImage(mapImage, 0, 0);
 
-      const baseRadius = 20;
-      const baseBorder = 5;
-      const baseFontSize = 54;
-      const baseCallFontSize = 36;
-
-      const invScale = Math.max(0.3, 1 / scale);
-      const radius = baseRadius * invScale;
-      const border = baseBorder * invScale;
-      const fontSize = baseFontSize * invScale;
-      const callFontSize = baseCallFontSize * invScale;
+      const fontSize = 54;
+      const callFontSize = 36;
+      const radius = 20;
+      const border = 5;
 
       function drawDot(x, z, fillColor, borderColor) {
         ctx.beginPath();
@@ -173,7 +107,7 @@
         if (pos.length < 2) continue;
         const [x, z] = pos;
         drawDot(x, z, 'black', 'white');
-        drawText(`#${call.CallNumber}`, x, z - radius - border - 8 * invScale, callFontSize, true);
+        drawText(`#${call.CallNumber}`, x, z - radius - border - 8, callFontSize, true);
         const caller = call.Caller;
         const players = (data && data.Players) || [];
         let belowText = call.Description || '';
@@ -181,7 +115,7 @@
           const match = players.find(p => String(p.Player || '').split(':')[1] === String(caller));
           belowText = match ? match.Player.split(':')[0] : String(caller);
         }
-        drawText(belowText, x, z + radius + border + 8 * invScale, callFontSize, false);
+        drawText(belowText, x, z + radius + border + 8, callFontSize, false);
       }
 
       const players = (data && data.Players) || [];
@@ -195,7 +129,7 @@
         if (!TEAM_COLORS[team]) continue;
         const color = callsign.includes('ST') ? '#e67e22' : TEAM_COLORS[team];
         drawDot(x, z, color, 'white');
-        drawText(callsign, x, z + radius + border + 8 * invScale, fontSize, false);
+        drawText(callsign, x, z + radius + border + 8, fontSize, false);
       }
     }
 
@@ -216,13 +150,8 @@
     }
 
     async function init() {
-      try {
-        await loadMap();
-        canvas.width = mapImage.naturalWidth;
-        canvas.height = mapImage.naturalHeight;
-        fitMap();
-        drawMap(null);
-      } catch(e) {}
+      try { await loadMap(); } catch(e) {}
+      drawMap(null);
       await fetchData();
       setInterval(fetchData, POLL_INTERVAL);
     }
